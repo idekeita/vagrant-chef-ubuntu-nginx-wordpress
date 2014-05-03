@@ -120,7 +120,16 @@ file "#{node['wp_install']['server_root']}/wp-config.php" do
   backup false
 end
 
+bash "wp core download" do
+  not_if {File.exists?( File.join(node['wp_install']['install_dir'], 'wp-load.php'))}
+  user node['wp_install']['user_name']
+  group node['wp_install']['user_name']
+  cwd node['wp_install']['server_root']
+  code "wp core download --locale=#{node['wp_install']['language']} --path=#{node['wp_install']['install_dir']}"
+end
+
 bash "wp core config" do
+  not_if {File.exists?( File.join(node['wp_install']['install_dir'], 'wp-config.php'))}
   user node['wp_install']['user_name']
   group node['wp_install']['user_name']
   cwd node['wp_install']['server_root']
